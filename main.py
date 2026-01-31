@@ -1,43 +1,29 @@
 import pygame, random, sys
 
-N = 4
-SIZE = 400
-TILE = SIZE // N
+from Board import Board
+
+SIZE = 3
+WINDOW_SIZE = 400
+TILE = WINDOW_SIZE // SIZE
 FONT_SIZE = 48
 
 pygame.init()
+
+board = Board(SIZE)
+board.shuffle(200)
+board.print()
+board.printLegalMoves()
+
+
+
+"""
 screen = pygame.display.set_mode((SIZE, SIZE))
 font = pygame.font.SysFont(None, FONT_SIZE)
 
 
-def solved_board():
-    return [[(i * N + j + 1) % (N * N) for j in range(N)] for i in range(N)]
-
-
-def find_zero(b):
-    for i in range(N):
-        for j in range(N):
-            if b[i][j] == 0:
-                return i, j
-
-
-def moves(b):
-    i, j = find_zero(b)
-    for di, dj in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-        ni, nj = i + di, j + dj
-        if 0 <= ni < N and 0 <= nj < N:
-            yield ni, nj
-
-
-def shuffle(b, steps=200):
-    for _ in range(steps):
-        ni, nj = random.choice(list(moves(b)))
-        i, j = find_zero(b)
-        b[i][j], b[ni][nj] = b[ni][nj], b[i][j]
-
-
-def draw(b):
+def draw(board):
     screen.fill((30, 30, 30))
+    b = board.grid
     for i in range(N):
         for j in range(N):
             v = b[i][j]
@@ -48,20 +34,23 @@ def draw(b):
             txt = font.render(str(v), True, (255, 255, 255))
             screen.blit(txt, txt.get_rect(center=r.center))
     pygame.display.flip()
-
-
-board = solved_board()
-shuffle(board)
-
+    
 while True:
     for e in pygame.event.get():
+        if board.is_solved():
+            print("yippie!")
         if e.type == pygame.QUIT:
-            pygame.quit();
+            pygame.quit()
             sys.exit()
         if e.type == pygame.MOUSEBUTTONDOWN:
             x, y = e.pos
             i, j = y // TILE, x // TILE
-            zi, zj = find_zero(board)
+            zi, zj = board.find_zero()
             if abs(i - zi) + abs(j - zj) == 1:
                 board[zi][zj], board[i][j] = board[i][j], board[zi][zj]
-    draw(board)
+    draw(board)    
+
+"""
+
+
+
