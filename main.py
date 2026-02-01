@@ -3,7 +3,7 @@ from UI import UI
 
 
 def main():
-    size = 5
+    size = 3
     board = Board(size)
     board.shuffle(200)
     ui = UI(board, size * 100)
