@@ -11,7 +11,6 @@ class UI:
         self.tileSize = windowSize // self.size
         self.screen = pygame.display.set_mode((self.windowSize, self.windowSize))
         self.font = pygame.font.SysFont(None, 48)
-        self.startPrint()
 
     def draw(self, board):
         self.screen.fill((30, 30, 30))
@@ -27,19 +26,3 @@ class UI:
                 txt = self.font.render(str(v), True, (255, 255, 255))
                 self.screen.blit(txt, txt.get_rect(center=r.center))
         pygame.display.flip()
-
-    def startPrint(self):
-        board = self.board
-        grid = board.grid
-        while True:
-            for e in pygame.event.get():
-                if e.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-                if e.type == pygame.MOUSEBUTTONDOWN:
-                    x, y = e.pos
-                    i, j = y // self.tileSize, x // self.tileSize
-                    zi, zj = board.find_zero()
-                    if abs(i - zi) + abs(j - zj) == 1:
-                        grid[zi][zj], grid[i][j] = grid[i][j], grid[zi][zj]
-            self.draw(self.board)

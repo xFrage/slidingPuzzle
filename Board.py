@@ -43,19 +43,22 @@ class Board:
         return moves
 
     def step(self, action):
-        size = self.size
-        #  action: 0 = up, 1 = down, 2 = left, 3 = right
-        zi, zj = self.find_zero()
         dirs = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        zi, zj = self.find_zero()
         di, dj = dirs[action]
         ni, nj = zi + di, zj + dj
 
-        if 0 <= ni < size and 0 <= nj < size:
-            self.grid[zi][zj], self.grid[ni][nj] = self.grid[ni][nj], self.grid[zi][zj]
+        if not (0 <= ni < self.size and 0 <= nj < self.size):
+            return self.get_state(), -0.1, False
 
-        reward = -self.manhattan_distance() / (size * size)  # Zwischenbelohnung
+        prev_dist = self.manhattan_distance()
+        self.grid[zi][zj], self.grid[ni][nj] = self.grid[ni][nj], self.grid[zi][zj]
+        new_dist = self.manhattan_distance()
+
+        reward = (prev_dist - new_dist) / (self.size * self.size)
         done = self.is_solved()
-        if done: reward = 1.0
+        if done: reward = 10.0
+        reward = max(min(reward, 10.0), -1.0)
         return self.get_state(), reward, done
 
     def manhattan_distance(self):
@@ -65,9 +68,9 @@ class Board:
             for j in range(size):
                 val = self.grid[i][j]
                 if val == 0: continue
-                target_i = (val-1)/size
-                target_j = (val-1)%size
-                dist += abs(i-target_i) + abs(j-target_j)
+                target_i = (val - 1) / size
+                target_j = (val - 1) % size
+                dist += abs(i - target_i) + abs(j - target_j)
         return dist
 
     def _solved_board(self):
@@ -109,10 +112,7 @@ class Board:
             i, j = self.find_zero()
             b[i][j], b[ni][nj] = b[ni][nj], b[i][j]
 
-
-
     def print(self):
         for row in self.grid:
             for v in row:
                 print(v, end='')
-
